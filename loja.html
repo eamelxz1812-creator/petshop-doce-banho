@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loja - Doce Banho</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo-link" href="index.html"><img src="logo.svg" alt="Doce Banho logo" class="logo"/></a>
+      <ul class="nav-list">
+        <li><a href="index.html">Início</a></li>
+        <li><a href="loja.html">Loja</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="shop">
+      <h1>Loja Doce Banho</h1>
+      <p>Produtos selecionados para o cuidado do seu pet. Retirada na loja.</p>
+
+      <div class="products-grid">
+        <article class="product" data-name="Ração Premium 2kg" data-price="120.00">
+          <h3>Ração Premium 2kg</h3>
+          <p class="price">R$ 120,00</p>
+          <p>Alimento balanceado para cães adultos.</p>
+          <button class="button add-to-cart">Adicionar ao carrinho</button>
+        </article>
+
+        <article class="product" data-name="Brinquedo Interativo" data-price="35.00">
+          <h3>Brinquedo Interativo</h3>
+          <p class="price">R$ 35,00</p>
+          <p>Estimula a diversão e atividade física.</p>
+          <button class="button add-to-cart">Adicionar ao carrinho</button>
+        </article>
+
+        <article class="product" data-name="Shampoo Suave 500ml" data-price="28.00">
+          <h3>Shampoo Suave 500ml</h3>
+          <p class="price">R$ 28,00</p>
+          <p>Hipoalergênico, ideal para peles sensíveis.</p>
+          <button class="button add-to-cart">Adicionar ao carrinho</button>
+        </article>
+
+        <article class="product" data-name="Petiscos Naturais" data-price="18.00">
+          <h3>Petiscos Naturais</h3>
+          <p class="price">R$ 18,00</p>
+          <p>Snack saudável para recompensar seu pet.</p>
+          <button class="button add-to-cart">Adicionar ao carrinho</button>
+        </article>
+      </div>
+
+      <!-- Cart panel -->
+      <aside class="cart-panel" id="cartPanel">
+        <h3>Meu Carrinho <span id="cartCount">(0)</span></h3>
+        <ul id="cartItems" class="cart-items"></ul>
+
+        <div class="cart-customer">
+          <label for="custName">Nome do cliente</label>
+          <input id="custName" type="text" placeholder="Seu nome" />
+          <label for="custPhone">Telefone (com DDD)</label>
+          <input id="custPhone" type="text" placeholder="43988174262" />
+        </div>
+
+        <div class="cart-footer">
+          <div class="cart-total">Total: <strong id="cartTotal">R$ 0,00</strong></div>
+          <button id="checkoutBtn" class="button">Retirar na loja</button>
+        </div>
+      </aside>
+
+      <!-- Confirmation modal -->
+      <div id="confirmModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+          <h3>Pedido Confirmado</h3>
+          <p id="confirmMessage">Seu pedido foi confirmado. Estamos aguardando a retirada.</p>
+          <button id="closeModal" class="button">Fechar</button>
+        </div>
+      </div>
+
+      <script>
+        (function(){
+          const cartKey = 'docebanho_cart_v1';
+          const products = document.querySelectorAll('.product');
+          const cartItemsEl = document.getElementById('cartItems');
+          const cartTotalEl = document.getElementById('cartTotal');
+          const cartCountEl = document.getElementById('cartCount');
+          const checkoutBtn = document.getElementById('checkoutBtn');
+          const confirmModal = document.getElementById('confirmModal');
+          const closeModal = document.getElementById('closeModal');
+
+          function formatBRL(n){ return 'R$ ' + n.toFixed(2).replace('.',','); }
+
+          function loadCart(){
+            const raw = localStorage.getItem(cartKey);
+            return raw ? JSON.parse(raw) : [];
+          }
+
+          function saveCart(cart){ localStorage.setItem(cartKey, JSON.stringify(cart)); }
+
+          function renderCart(){
+            const cart = loadCart();
+            cartItemsEl.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, idx)=>{
+              total += item.price * item.qty;
+              const li = document.createElement('li');
+              li.innerHTML = `<span class="ci-name">${item.name}</span> <span class="ci-qty">x${item.qty}</span> <span class="ci-price">${formatBRL(item.price*item.qty)}</span> <button class="remove-item" data-idx="${idx}">✕</button>`;
+              cartItemsEl.appendChild(li);
+            });
+            cartTotalEl.textContent = formatBRL(total);
+            cartCountEl.textContent = `(${cart.reduce((s,i)=>s+i.qty,0)})`;
+            // attach remove handlers
+            document.querySelectorAll('.remove-item').forEach(btn=>{
+              btn.addEventListener('click', ()=>{
+                const idx = Number(btn.dataset.idx);
+                const c = loadCart();
+                c.splice(idx,1);
+                saveCart(c);
+                renderCart();
+              });
+            });
+          }
+
+          products.forEach(prod=>{
+            const btn = prod.querySelector('.add-to-cart');
+            btn.addEventListener('click', ()=>{
+              const name = prod.dataset.name;
+              const price = Number(prod.dataset.price);
+              const cart = loadCart();
+              const existing = cart.find(i=>i.name===name);
+              if(existing){ existing.qty += 1; } else { cart.push({name, price, qty:1}); }
+              saveCart(cart);
+              renderCart();
+            });
+          });
+
+          checkoutBtn.addEventListener('click', ()=>{
+            const cart = loadCart();
+            if(!cart.length){ alert('Seu carrinho está vazio. Adicione produtos antes de retirar.'); return; }
+
+            const custName = document.getElementById('custName').value.trim();
+            const custPhone = document.getElementById('custPhone').value.replace(/\D/g,'').trim();
+            if(!custName){ alert('Por favor, informe seu nome.'); document.getElementById('custName').focus(); return; }
+            if(!custPhone){ alert('Por favor, informe seu telefone com DDD (somente números).'); document.getElementById('custPhone').focus(); return; }
+
+            // build order summary
+            let lines = cart.map(i => `${i.name} x${i.qty} - ${formatBRL(i.price * i.qty)}`);
+            const total = cart.reduce((s,i)=>s + i.price * i.qty, 0);
+            const msg = `Olá Doce Banho, meu nome é ${custName} (telefone: ${custPhone}).%0AGostaria de retirar o pedido:%0A${lines.join('%0A')}%0ATotal: ${formatBRL(total)}%0APor favor, confirmar retirada. Obrigado.`;
+            const waNumber = '5543988174262';
+            const waUrl = `https://wa.me/${waNumber}?text=${msg}`;
+
+            // open WhatsApp with prefilled message (user can edit/send)
+            window.open(waUrl, '_blank');
+
+            // show confirmation modal and clear cart locally
+            confirmModal.setAttribute('aria-hidden','false');
+            confirmModal.style.display = 'flex';
+            localStorage.removeItem(cartKey);
+            renderCart();
+            // clear customer inputs
+            document.getElementById('custName').value = '';
+            document.getElementById('custPhone').value = '';
+          });
+
+          closeModal.addEventListener('click', ()=>{
+            confirmModal.setAttribute('aria-hidden','true');
+            confirmModal.style.display = 'none';
+          });
+
+          // initial render
+          renderCart();
+        })();
+      </script>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 PetShop Doce banho - banho e tosa atendimento com carinho.
+      <div class="footer-links">
+        <a href="privacidade.html">Política de Privacidade</a> •
+        <a href="termos.html">Termos de Uso</a> •
+        <a href="cookies.html">Aviso de Cookies</a> •
+        <a href="seguranca.html">Segurança</a>
+      </div>
+    </div>
+  </footer>
+
+  <a class="whatsapp-float" href="https://wa.me/5543988174262?text=Olá%20Doce%20Banho,%20gostaria%20de%20mais%20informações." target="_blank" rel="noopener noreferrer">💬</a>
+
+</body>
+</html>

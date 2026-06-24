@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Segurança - Doce Banho</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .content-page { max-width:800px; margin:2rem auto; padding:2rem; background:rgba(255,255,255,0.9); border-radius:20px }
+    .content-page h1{font-size:2rem;margin-bottom:1rem}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo-link" href="index.html"><img src="logo.svg" alt="Doce Banho logo" class="logo"/></a>
+      <ul class="nav-list">
+        <li><a href="index.html">Início</a></li>
+        <li><a href="loja.html">Loja</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="content-page">
+      <h1>Segurança e Proteção de Dados</h1>
+      <p>Resumo prático para proteger o site e os dados dos clientes:</p>
+      <ul>
+        <li><strong>HTTPS obrigatório:</strong> publique em serviços que forneçam SSL (GitHub Pages, Netlify, Vercel).</li>
+        <li><strong>Não exponha segredos:</strong> mantenha chaves e credenciais fora do repositório (.env e .gitignore).</li>
+        <li><strong>Valide e sanitize dados:</strong> evite SQL injection e XSS usando consultas parametrizadas e escape de saída.</li>
+        <li><strong>Autenticação forte:</strong> use provedores como Supabase/Firebase para login com senha segura e 2FA para acessos administrativos.</li>
+        <li><strong>Backups e logs:</strong> configure backups periódicos e monitore acessos suspeitos.</li>
+        <li><strong>Permissões mínimas:</strong> se houver painel, crie contas com permissões separadas para funcionários.</li>
+        <li><strong>LGPD:</strong> colete apenas o necessário e documente como os dados são usados (Política de Privacidade).</li>
+      </ul>
+      <p>Se quiser, posso gerar um checklist técnico para implementar cada item com exemplos (Node, PHP, Supabase, etc.).</p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 PetShop Doce Pelos • Banho e Tosa • Atendimento com carinho</p>
+      <div class="footer-links">
+        <a href="privacidade.html">Política de Privacidade</a> •
+        <a href="termos.html">Termos de Uso</a> •
+        <a href="cookies.html">Aviso de Cookies</a>
+      </div>
+    </div>
+  </footer>
+
+  <a class="whatsapp-float" href="https://wa.me/5543988174262?text=Olá%20Doce%20Banho,%20preciso%20de%20ajuda%20com%20segurança." target="_blank" rel="noopener noreferrer">💬</a>
+</body>
+</html>
